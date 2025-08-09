@@ -67,8 +67,7 @@ gitlab/
    ```
 
 5. **🌐 Access GitLab**:
-   - 🔗 URL: http://gitlab.hungngquang.xyz:2424
-   - 🔐 SSH: gitlab.hungngquang.xyz:2224
+   - 🔗 URL: https://gitlab.hungngquang.xyz
    - 👤 Default user: root
    - 🔑 Password: Xitrumcute15030410@@
 

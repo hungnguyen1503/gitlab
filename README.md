@@ -1,138 +1,139 @@
-# GitLab Self-Hosted Docker Setup
+# 🦊 GitLab Self-Hosted Docker Setup
 
 This repository contains a Docker Compose configuration for running GitLab Community Edition with external PostgreSQL and Redis in a self-hosted environment.
 
-## Features
+## ✨ Features
 
-- **Separate Database Services**: External PostgreSQL 16 and Redis 7 containers
-- **Performance Optimized**: Optimized for faster startup and better resource utilization
-- **Health Checks**: Comprehensive container health monitoring with fast intervals
-- **Resource Limits**: Memory and CPU constraints for stability
-- **Auto Migration**: Automatic database migration on startup
-- **Service Dependencies**: Proper service dependency management
-- **Network Isolation**: Dedicated Docker network for GitLab services
+- 🗄️ **Separate Database Services**: External PostgreSQL 16 and Redis 7 containers
+- ⚡ **Performance Optimized**: Optimized for faster startup and better resource utilization
+- 💚 **Health Checks**: Comprehensive container health monitoring with fast intervals
+- 🛡️ **Resource Limits**: Memory and CPU constraints for stability
+- 🔄 **Auto Migration**: Automatic database migration on startup
+- 🔗 **Service Dependencies**: Proper service dependency management
+- 🌐 **Network Isolation**: Dedicated Docker network for GitLab services
 
-## Prerequisites
+## 📋 Prerequisites
 
-- Docker and Docker Compose installed
-- Domain name pointing to your server (gitlab.hungngquang.xyz)
-- Ports 2224 (SSH) and 2424 (HTTP) available on your server
-- At least 2GB RAM and 1 CPU core recommended (optimized configuration)
+- 🐳 Docker and Docker Compose installed
+- 🌍 Domain name pointing to your server (gitlab.hungngquang.xyz)
+- 🔌 Ports 2224 (SSH) and 2424 (HTTP) available on your server
+- 💾 At least 2GB RAM and 1 CPU core recommended (optimized configuration)
 
-## Architecture
+## 🏗️ Architecture
 
 This setup uses a **3-container architecture**:
-- **gitlab-server**: GitLab CE application server
-- **postgresql**: PostgreSQL 16 database server
-- **redis**: Redis 7 caching server
+- 🦊 **gitlab-server**: GitLab CE application server
+- 🐘 **postgresql**: PostgreSQL 16 database server
+- 🔴 **redis**: Redis 7 caching server
 
-## Directory Structure
+## 📁 Directory Structure
 
 ```
 gitlab/
-├── docker-compose.yml          # Main configuration
-├── README.md                   # This file
-
-├── gitlab/                     # GitLab application data
-│   ├── config/                 # GitLab configuration files
-│   ├── logs/                   # GitLab log files
-│   └── data/                   # GitLab data (repositories, uploads, etc.)
-├── postgresql/                 # PostgreSQL database
-│   └── data/                   # Database files
-└── redis/                      # Redis cache
-    └── data/                   # Redis persistence files
+├── 🐳 docker-compose.yml          # Main configuration
+├── 📖 README.md                   # This file
+├── 🚫 .gitignore                  # Git ignore file
+│
+├── 🦊 gitlab/                     # GitLab application data
+│   ├── ⚙️  config/                # GitLab configuration files
+│   ├── 📄 logs/                   # GitLab log files
+│   └── 💾 data/                   # GitLab data (repositories, uploads, etc.)
+├── 🐘 postgresql/                 # PostgreSQL database
+│   └── 💾 data/                   # Database files
+└── 🔴 redis/                      # Redis cache
+    └── 💾 data/                   # Redis persistence files
 ```
 
-## Quick Start
+## 🚀 Quick Start
 
-1. **Clone and navigate to directory**:
+1. **📥 Clone and navigate to directory**:
    ```bash
    cd /path/to/gitlab
    ```
 
-2. **Start services**:
+2. **▶️ Start services**:
    ```bash
    docker-compose up -d
    ```
 
-3. **Monitor startup** (GitLab takes 3-5 minutes to fully start):
+3. **👀 Monitor startup** (GitLab takes 3-5 minutes to fully start):
    ```bash
    docker-compose logs -f gitlab-server
    ```
 
-4. **Check service health**:
+4. **✅ Check service health**:
    ```bash
    docker-compose ps
    ```
 
-5. **Access GitLab**:
-   - URL: http://gitlab.hungngquang.xyz:2424
-   - SSH: gitlab.hungngquang.xyz:2224
-   - Default user: root
-   - Password: Xitrumcute15030410@@
+5. **🌐 Access GitLab**:
+   - 🔗 URL: http://gitlab.hungngquang.xyz:2424
+   - 🔐 SSH: gitlab.hungngquang.xyz:2224
+   - 👤 Default user: root
+   - 🔑 Password: Xitrumcute15030410@@
 
-## Configuration Details
+## ⚙️ Configuration Details
 
-### Database Configuration
+### 🐘 Database Configuration
 - **PostgreSQL 16**: External database with optimized settings
 - **Database**: gitlab
 - **User**: gitlab
 - **Encoding**: UTF-8 with C locale for performance
 - **Health Checks**: 10s intervals with 15s start period
 
-### Cache Configuration
+### 🔴 Cache Configuration
 - **Redis 7**: External cache with persistence
 - **Memory Limit**: 256MB with LRU eviction policy
 - **Persistence**: AOF enabled for data durability
 - **Health Checks**: 10s intervals with 10s start period
 
-### GitLab Application Settings
+### 🦊 GitLab Application Settings
 - **Puma Workers**: 1 worker with 1-4 threads (optimized for startup)
 - **Memory Settings**: 
-  - PostgreSQL: 128MB shared buffers, 512MB cache
-  - Redis: 128MB max memory
+  - 🐘 PostgreSQL: 128MB shared buffers, 512MB cache
+  - 🔴 Redis: 128MB max memory
 - **Disabled Services**: KAS, usage ping, Sentry, email (for faster startup)
 - **Auto Migration**: Enabled for seamless updates
 
-### Network Configuration
+### 🌐 Network Configuration
 - **HTTP Port**: 2424 (mapped from container port 80)
 - **SSH Port**: 2224 (mapped from container port 22)
 - **Internal Network**: gitlab-network (bridge driver)
 - **Database Port**: 5432 (exposed for administration)
 - **Redis Port**: 6379 (exposed for monitoring)
 
-### Performance Optimizations
+### ⚡ Performance Optimizations
 - **Startup Time**: Optimized for 30-50% faster startup
 - **Health Checks**: Fast intervals for quick failure detection
 - **Memory Usage**: Reduced memory footprint for smaller servers
 - **Service Dependencies**: PostgreSQL and Redis must be healthy before GitLab starts
 
-## Services
+## 🐳 Services
 
-### GitLab Server
+### 🦊 GitLab Server
 - **Image**: gitlab/gitlab-ce:latest
 - **Container**: gitlab-server
 - **Ports**: 2424 (HTTP), 2224 (SSH)
 - **URL**: http://gitlab.hungngquang.xyz:2424
 - **Health Check**: 30s intervals, 5-minute startup grace period
 
-### PostgreSQL Database
+### 🐘 PostgreSQL Database
 - **Image**: postgres:16-alpine
 - **Container**: gitlab-postgresql
 - **Port**: 5432
 - **Database**: gitlab
 - **Health Check**: 10s intervals, 15s startup grace period
 
-### Redis Cache
+### 🔴 Redis Cache
 - **Image**: redis:7-alpine
 - **Container**: gitlab-redis
 - **Port**: 6379
 - **Memory**: 256MB with persistence
 - **Health Check**: 10s intervals, 10s startup grace period
 
-## Maintenance
+## 🔧 Maintenance
 
-### Service Management
+### 🎛️ Service Management
 ```bash
 # View service status
 docker-compose ps
@@ -150,7 +151,7 @@ docker-compose down
 docker-compose up -d
 ```
 
-### GitLab Administration
+### 🦊 GitLab Administration
 ```bash
 # Access GitLab console
 docker-compose exec gitlab-server gitlab-rails console
@@ -165,7 +166,7 @@ docker-compose exec gitlab-server gitlab-ctl status
 docker-compose exec gitlab-server gitlab-backup create
 ```
 
-### Database Management
+### 🐘 Database Management
 ```bash
 # Access PostgreSQL
 docker-compose exec postgresql psql -U gitlab -d gitlab
@@ -177,7 +178,7 @@ docker-compose exec postgresql pg_dump -U gitlab gitlab > backup.sql
 docker-compose exec postgresql psql -U gitlab -d gitlab -c "SELECT pg_size_pretty(pg_database_size('gitlab'));"
 ```
 
-### Cache Management
+### 🔴 Cache Management
 ```bash
 # Access Redis CLI
 docker-compose exec redis redis-cli
@@ -189,7 +190,7 @@ docker-compose exec redis redis-cli info memory
 docker-compose exec redis redis-cli flushall
 ```
 
-## Updates
+## 🔄 Updates
 
 ```bash
 # Pull latest images
@@ -204,9 +205,9 @@ docker-compose ps
 docker logs gitlab-server --tail 50
 ```
 
-## Backup Strategy
+## 💾 Backup Strategy
 
-### GitLab Application Backup
+### 🦊 GitLab Application Backup
 ```bash
 # Create backup
 docker-compose exec gitlab-server gitlab-backup create
@@ -218,7 +219,7 @@ docker-compose exec gitlab-server gitlab-backup create BACKUP=backup_$(date +%Y%
 docker-compose exec gitlab-server ls -la /var/opt/gitlab/backups/
 ```
 
-### Database Backup
+### 🐘 Database Backup
 ```bash
 # PostgreSQL backup
 docker-compose exec postgresql pg_dump -U gitlab gitlab > "gitlab_db_$(date +%Y%m%d_%H%M%S).sql"
@@ -227,7 +228,7 @@ docker-compose exec postgresql pg_dump -U gitlab gitlab > "gitlab_db_$(date +%Y%
 echo "docker-compose exec postgresql pg_dump -U gitlab gitlab" | crontab -e
 ```
 
-### Full System Backup
+### 📦 Full System Backup
 ```bash
 # Stop services
 docker-compose down
@@ -239,9 +240,9 @@ tar -czf gitlab_full_backup_$(date +%Y%m%d_%H%M%S).tar.gz gitlab/ postgresql/ re
 docker-compose up -d
 ```
 
-## Monitoring
+## 📊 Monitoring
 
-### Health Monitoring
+### 💚 Health Monitoring
 ```bash
 # Check all service health
 docker-compose ps
@@ -253,7 +254,7 @@ docker-compose logs -f
 docker stats gitlab-server gitlab-postgresql gitlab-redis
 ```
 
-### Performance Monitoring
+### 📈 Performance Monitoring
 ```bash
 # GitLab metrics (if Prometheus enabled)
 curl http://localhost:2424/-/metrics
@@ -265,53 +266,53 @@ docker-compose exec postgresql psql -U gitlab -d gitlab -c "SELECT * FROM pg_sta
 docker-compose exec redis redis-cli info stats
 ```
 
-## Troubleshooting
+## 🔧 Troubleshooting
 
-### Common Issues
+### ⚠️ Common Issues
 
-1. **GitLab takes long to start**: Normal behavior, wait 3-5 minutes
+1. **🐌 GitLab takes long to start**: Normal behavior, wait 3-5 minutes
    ```bash
    docker-compose logs -f gitlab-server
    ```
 
-2. **Database connection issues**: Check PostgreSQL health
+2. **🐘 Database connection issues**: Check PostgreSQL health
    ```bash
    docker-compose exec postgresql pg_isready -U gitlab
    ```
 
-3. **Redis connection issues**: Check Redis connectivity
+3. **🔴 Redis connection issues**: Check Redis connectivity
    ```bash
    docker-compose exec redis redis-cli ping
    ```
 
-4. **Port conflicts**: Check if ports 2224, 2424, 5432, 6379 are available
+4. **🔌 Port conflicts**: Check if ports 2224, 2424, 5432, 6379 are available
    ```bash
    netstat -tuln | grep -E "(2224|2424|5432|6379)"
    ```
 
-5. **Permission issues**: Check file ownership
+5. **🔐 Permission issues**: Check file ownership
    ```bash
    ls -la gitlab/ postgresql/ redis/
    ```
 
-### Performance Issues
+### 🐌 Performance Issues
 
-1. **High memory usage**: Monitor and adjust limits
+1. **🧠 High memory usage**: Monitor and adjust limits
    ```bash
    docker stats --no-stream
    ```
 
-2. **Slow startup**: Check optimized settings are applied
+2. **🐌 Slow startup**: Check optimized settings are applied
    ```bash
    docker-compose exec gitlab-server gitlab-ctl status
    ```
 
-3. **Database performance**: Monitor PostgreSQL
+3. **🐘 Database performance**: Monitor PostgreSQL
    ```bash
    docker-compose exec postgresql psql -U gitlab -d gitlab -c "SELECT * FROM pg_stat_database;"
    ```
 
-### Service Recovery
+### 🔄 Service Recovery
 
 ```bash
 # Restart individual services
@@ -328,32 +329,30 @@ docker-compose down --volumes
 docker-compose up -d
 ```
 
-## Security Notes
+## 🛡️ Security Notes
 
-- **Change default password**: Root password is hardcoded in config
-- **Database security**: PostgreSQL is exposed on port 5432
-- **Redis security**: Redis is exposed on port 6379
-- **Network isolation**: Services communicate through dedicated network
-- **Regular updates**: Keep GitLab and database images updated
-- **Backup encryption**: Encrypt backups before storing offsite
+- 🔑 **Change default password**: Root password is hardcoded in config
+- 🐘 **Database security**: PostgreSQL is exposed on port 5432
+- 🔴 **Redis security**: Redis is exposed on port 6379
+- 🌐 **Network isolation**: Services communicate through dedicated network
+- 🔄 **Regular updates**: Keep GitLab and database images updated
+- 🔐 **Backup encryption**: Encrypt backups before storing offsite
 
-
-
-## Support
+## 📚 Support
 
 For issues specific to this setup:
-- [GitLab Docker Documentation](https://docs.gitlab.com/omnibus/docker/)
-- [PostgreSQL Docker Documentation](https://hub.docker.com/_/postgres)
-- [Redis Docker Documentation](https://hub.docker.com/_/redis)
-- [GitLab Troubleshooting Guide](https://docs.gitlab.com/ee/administration/troubleshooting/)
-- [Docker Compose Documentation](https://docs.docker.com/compose/)
+- 🦊 [GitLab Docker Documentation](https://docs.gitlab.com/omnibus/docker/)
+- 🐘 [PostgreSQL Docker Documentation](https://hub.docker.com/_/postgres)
+- 🔴 [Redis Docker Documentation](https://hub.docker.com/_/redis)
+- 🔧 [GitLab Troubleshooting Guide](https://docs.gitlab.com/ee/administration/troubleshooting/)
+- 🐳 [Docker Compose Documentation](https://docs.docker.com/compose/)
 
-## Configuration Summary
+## 📋 Configuration Summary
 
 | Component | Version | Port | Health Check | Memory Limit |
 |-----------|---------|------|--------------|--------------|
-| GitLab CE | latest | 2424, 2224 | 30s intervals | Optimized |
-| PostgreSQL | 16-alpine | 5432 | 10s intervals | 128MB shared |
-| Redis | 7-alpine | 6379 | 10s intervals | 256MB max |
+| 🦊 GitLab CE | latest | 2424, 2224 | 30s intervals | Optimized |
+| 🐘 PostgreSQL | 16-alpine | 5432 | 10s intervals | 128MB shared |
+| 🔴 Redis | 7-alpine | 6379 | 10s intervals | 256MB max |
 
-**Total recommended resources**: 2GB RAM, 1 CPU core, 10GB+ storage
+**💪 Total recommended resources**: 2GB RAM, 1 CPU core, 10GB+ storage

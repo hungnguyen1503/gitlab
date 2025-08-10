@@ -99,6 +99,7 @@ services:
       - ./gitlab/config:/etc/gitlab
       - ./gitlab/logs:/var/log/gitlab
       - ./gitlab/data:/var/opt/gitlab
+      - /mnt/gitlab_artifacts:/var/opt/gitlab/gitlab-rails/shared/artifacts
     ports:
       - '2424:80'
       - '2224:22'

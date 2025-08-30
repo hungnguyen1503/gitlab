@@ -53,6 +53,20 @@ docker compose up -d
 - 🌐 **External Access**: Your configured `GITLAB_EXTERNAL_URL` (via Cloudflare)
 - 🔑 **Default Admin**: Use credentials from `.env` file
 
+### 4️⃣ **Auto-start on Boot (Optional)**: 
+```bash
+# Create systemd service for auto-start
+sudo cp gitlab.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable gitlab.service
+
+# Start the service
+sudo systemctl start gitlab.service
+
+# Check status
+sudo systemctl status gitlab.service
+```
+
 ## 🛠️ Services Included:
 - 🦊 **GitLab CE**: Main GitLab application (port 2424)
 - 🐘 **PostgreSQL**: Database backend (port 5432)
@@ -64,6 +78,7 @@ docker compose up -d
 - **External Port Mapping**: `2424:2424` (host:container)
 - **Network Mode**: Cloudflare uses shared network with GitLab
 - **Health Checks**: All services include health monitoring
+- **Restart Policy**: All services use `restart: always` for reliable auto-restart
 
 ## 📊 Monitoring:
 GitLab includes built-in health checks and monitoring endpoints for all services.
@@ -97,6 +112,24 @@ docker compose restart cloudflared
 
 # Access GitLab shell
 docker compose exec gitlab-server bash
+```
+
+### Systemd Service Management
+If you've set up the systemd service for auto-start:
+
+```bash
+# Check service status
+sudo systemctl status gitlab.service
+
+# Start/stop the service
+sudo systemctl start gitlab.service
+sudo systemctl stop gitlab.service
+
+# Restart the service
+sudo systemctl restart gitlab.service
+
+# View service logs
+sudo journalctl -u gitlab.service -f
 ```
 
 ## 📄 License:

@@ -3,7 +3,7 @@ services:
   postgresql:
     image: postgres:16-alpine
     container_name: gitlab-postgresql
-    restart: unless-stopped
+    restart: always
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-gitlab}
       POSTGRES_USER: ${POSTGRES_USER:-gitlab}
@@ -26,7 +26,7 @@ services:
   redis:
     image: redis:7-alpine
     container_name: gitlab-redis
-    restart: unless-stopped
+    restart: always
     command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
     volumes:
       - /data/gitlab/redis:/data
@@ -44,7 +44,7 @@ services:
   gitlab-server:
     image: 'gitlab/gitlab-ce:latest'
     container_name: gitlab-server
-    restart: unless-stopped
+    restart: always
     hostname: 'gitlab.example.com'
     depends_on:
       postgresql:
@@ -121,7 +121,7 @@ services:
     environment:
       TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN}
     network_mode: "service:gitlab-server"
-    restart: unless-stopped
+    restart: always
     depends_on:
       gitlab-server:
         condition: service_healthy

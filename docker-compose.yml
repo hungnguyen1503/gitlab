@@ -6,16 +6,16 @@ services:
     container_name: gitlab-postgresql
     restart: unless-stopped
     environment:
-      POSTGRES_DB: gitlab
-      POSTGRES_USER: gitlab
-      POSTGRES_PASSWORD: gitlab_password_secure
+      POSTGRES_DB: ${POSTGRES_DB:-gitlab}
+      POSTGRES_USER: ${POSTGRES_USER:-gitlab}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-gitlab_password_secure}
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
     volumes:
-      - ./postgresql/data:/var/lib/postgresql/data
+      - /data/gitlab/postgresql:/var/lib/postgresql/data
     ports:
       - '5432:5432'
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U gitlab"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-gitlab}"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -30,7 +30,7 @@ services:
     restart: unless-stopped
     command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
     volumes:
-      - ./redis/data:/data
+      - /data/gitlab/redis:/data
     ports:
       - '6379:6379'
     healthcheck:
@@ -53,20 +53,20 @@ services:
       redis:
         condition: service_healthy
     environment:
-      GITLAB_ROOT_EMAIL: "quanghung1599@gmail.com"
-      GITLAB_ROOT_PASSWORD: "Xitrumcute15030410@@"
+      GITLAB_ROOT_EMAIL: ${GITLAB_ROOT_EMAIL}
+      GITLAB_ROOT_PASSWORD: ${GITLAB_ROOT_PASSWORD}
       GITLAB_OMNIBUS_CONFIG: |
-        external_url 'http://gitlab.hungngquang.xyz'
-        gitlab_rails['gitlab_shell_ssh_port'] = 2224
+        external_url '${GITLAB_EXTERNAL_URL}'
+        gitlab_rails['gitlab_shell_ssh_port'] = 2222
         gitlab_rails['time_zone'] = 'UTC'
         
         # Database configuration
         gitlab_rails['db_adapter'] = 'postgresql'
         gitlab_rails['db_host'] = 'postgresql'
         gitlab_rails['db_port'] = '5432'
-        gitlab_rails['db_database'] = 'gitlab'
-        gitlab_rails['db_username'] = 'gitlab'
-        gitlab_rails['db_password'] = 'gitlab_password_secure'
+        gitlab_rails['db_database'] = '${POSTGRES_DB:-gitlab}'
+        gitlab_rails['db_username'] = '${POSTGRES_USER:-gitlab}'
+        gitlab_rails['db_password'] = '${POSTGRES_PASSWORD:-gitlab_password_secure}'
         
         # Redis configuration
         gitlab_rails['redis_host'] = 'redis'
@@ -86,7 +86,7 @@ services:
         
         # Optimize GitLab startup
         gitlab_rails['auto_migrate'] = true
-        gitlab_rails['initial_root_password'] = 'Xitrumcute15030410@@'
+        gitlab_rails['initial_root_password'] = '${GITLAB_ROOT_PASSWORD:-Xitrumcute15030410@@}'
         
         # Memory optimizations
         postgresql['shared_buffers'] = "128MB"
@@ -96,13 +96,13 @@ services:
         redis['maxmemory'] = "128MB"
         redis['maxmemory_policy'] = "allkeys-lru"
     volumes:
-      - ./gitlab/config:/etc/gitlab
-      - ./gitlab/logs:/var/log/gitlab
-      - ./gitlab/data:/var/opt/gitlab
-      - /mnt/gitlab_artifacts:/var/opt/gitlab/gitlab-rails/shared/artifacts
+      - /data/gitlab/config:/etc/gitlab
+      - /data/gitlab/logs:/var/log/gitlab
+      - /data/gitlab/data:/var/opt/gitlab
+      - /data/gitlab/artifacts:/var/opt/gitlab/gitlab-rails/shared/artifacts
     ports:
       - '2424:80'
-      - '2224:22'
+      - '2222:22'
     shm_size: '512m'
     healthcheck:
       test: ["CMD", "/opt/gitlab/bin/gitlab-healthcheck", "--fail-fast"]
@@ -112,6 +112,18 @@ services:
       start_period: 300s
     networks:
       - gitlab-network
+
+  # Cloudflare Tunnel: Securely expose GitLab to the internet
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: gitlab-cloudflared
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN}
+    network_mode: "service:gitlab-server"
+    restart: unless-stopped
+    depends_on:
+      - gitlab-server
 
 networks:
   gitlab-network:

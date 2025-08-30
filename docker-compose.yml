@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   # PostgreSQL Database for GitLab
   postgresql:
@@ -53,10 +52,11 @@ services:
       redis:
         condition: service_healthy
     environment:
-      GITLAB_ROOT_EMAIL: ${GITLAB_ROOT_EMAIL}
-      GITLAB_ROOT_PASSWORD: ${GITLAB_ROOT_PASSWORD}
+      GITLAB_ROOT_EMAIL: ${GITLAB_ROOT_EMAIL:-"quanghung1599@gmail.com"}
+      GITLAB_ROOT_PASSWORD: ${GITLAB_ROOT_PASSWORD:-"Xitrumcute15030410@@"}
       GITLAB_OMNIBUS_CONFIG: |
-        external_url '${GITLAB_EXTERNAL_URL}'
+        external_url '${GITLAB_EXTERNAL_URL:-http://gitlab.hungngquang.xyz}'
+        nginx['listen_port'] = 2424
         gitlab_rails['gitlab_shell_ssh_port'] = 2222
         gitlab_rails['time_zone'] = 'UTC'
         
@@ -101,11 +101,11 @@ services:
       - /data/gitlab/data:/var/opt/gitlab
       - /data/gitlab/artifacts:/var/opt/gitlab/gitlab-rails/shared/artifacts
     ports:
-      - '2424:80'
+      - '2424:2424'
       - '2222:22'
     shm_size: '512m'
     healthcheck:
-      test: ["CMD", "/opt/gitlab/bin/gitlab-healthcheck", "--fail-fast"]
+      test: ["CMD", "/opt/gitlab/bin/gitlab-healthcheck"]
       interval: 30s
       timeout: 15s
       retries: 3
@@ -123,7 +123,8 @@ services:
     network_mode: "service:gitlab-server"
     restart: unless-stopped
     depends_on:
-      - gitlab-server
+      gitlab-server:
+        condition: service_healthy
 
 networks:
   gitlab-network:

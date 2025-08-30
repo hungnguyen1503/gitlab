@@ -45,21 +45,59 @@ cp .env.example .env
 
 ### 2️⃣ Launch Services
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 ### 3️⃣ Access GitLab
-- 🌐 Web Interface: Your configured `GITLAB_EXTERNAL_URL`
-- 🔑 Default Admin: Use credentials from `.env` file
+- 🌐 **Local Access**: `http://localhost:2424`
+- 🌐 **External Access**: Your configured `GITLAB_EXTERNAL_URL` (via Cloudflare)
+- 🔑 **Default Admin**: Use credentials from `.env` file
 
 ## 🛠️ Services Included:
-- 🦊 **GitLab CE**: Main GitLab application
-- 🐘 **PostgreSQL**: Database backend
-- 🚀 **Redis**: Caching and session storage
+- 🦊 **GitLab CE**: Main GitLab application (port 2424)
+- 🐘 **PostgreSQL**: Database backend (port 5432)
+- 🚀 **Redis**: Caching and session storage (port 6379)
 - ☁️ **Cloudflare Tunnel**: Secure external access
+
+## 🔧 Configuration Details:
+- **GitLab Internal Port**: 2424 (configured in nginx)
+- **External Port Mapping**: `2424:2424` (host:container)
+- **Network Mode**: Cloudflare uses shared network with GitLab
+- **Health Checks**: All services include health monitoring
 
 ## 📊 Monitoring:
 GitLab includes built-in health checks and monitoring endpoints for all services.
+
+## 🚨 Troubleshooting:
+
+### Cloudflare Tunnel Issues:
+If you get "Bad Gateway" errors:
+1. **Check container status**: `docker compose ps`
+2. **Verify network mode**: Cloudflare should use `container:...` network
+3. **Check tunnel logs**: `docker compose logs cloudflared`
+4. **Restart tunnel**: `docker compose restart cloudflared`
+
+### Common Issues:
+- **Port 2424 not accessible**: Ensure GitLab is healthy and nginx is listening
+- **Cloudflare connection refused**: Verify shared network mode is working
+- **Database connection issues**: Check PostgreSQL health status
+
+### Useful Commands:
+```bash
+# Check service status
+docker compose ps
+
+# View logs
+docker compose logs gitlab-server
+docker compose logs cloudflared
+
+# Restart specific service
+docker compose restart gitlab-server
+docker compose restart cloudflared
+
+# Access GitLab shell
+docker compose exec gitlab-server bash
+```
 
 ## 📄 License:
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

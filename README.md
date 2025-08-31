@@ -95,15 +95,15 @@ Create a `.env` file in the project root with the following variables:
 
 > **⚠️ Security Note:** Never commit your actual `.env` file to version control. Use `.env.example` as a template and keep your real credentials secure.
 
-| Variable | Description | Default | Required |
-|----------|-------------|---------|----------|
-| `CLOUDFLARE_TUNNEL_TOKEN` | Cloudflare Tunnel token for remote access | - | Yes |
-| `GITLAB_ROOT_EMAIL` | GitLab admin email address | quanghung1599@gmail.com | No |
-| `GITLAB_ROOT_PASSWORD` | GitLab admin password | Xitrumcute15030410@@ | No |
-| `GITLAB_EXTERNAL_URL` | GitLab external URL | http://gitlab.hungngquang.xyz | No |
-| `POSTGRES_DB` | PostgreSQL database name | gitlab | No |
-| `POSTGRES_USER` | PostgreSQL username | gitlab | No |
-| `POSTGRES_PASSWORD` | PostgreSQL password | gitlab_password_secure | No |
+| Variable                   | Description                              | Default                | Required |
+|----------------------------|------------------------------------------|------------------------|----------|
+| `CLOUDFLARE_TUNNEL_TOKEN`  | Cloudflare Tunnel token for remote access| -                      | Yes      |
+| `GITLAB_ROOT_EMAIL`        | GitLab admin email address               | (your email)           | Yes      |
+| `GITLAB_ROOT_PASSWORD`     | GitLab admin password                    | (your password)        | Yes      |
+| `GITLAB_EXTERNAL_URL`      | GitLab external URL                      | http://your-domain.com | Yes      |
+| `POSTGRES_DB`              | PostgreSQL database name                 | gitlab                 | Yes      |
+| `POSTGRES_USER`            | PostgreSQL username                      | gitlab                 | Yes      |
+| `POSTGRES_PASSWORD`        | PostgreSQL password                      | (your password)        | Yes      |
 
 ### Docker Compose Services
 

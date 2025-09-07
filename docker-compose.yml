@@ -45,20 +45,35 @@ services:
     image: 'gitlab/gitlab-ce:latest'
     container_name: gitlab-server
     restart: always
-    hostname: 'gitlab.example.com'
+    hostname: 'gitlab.hungngquang.xyz'
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.gitlab-https.rule=Host('gitlab.hungngquang.xyz')
+      - traefik.http.routers.gitlab-https.entrypoints=websecure
+      - traefik.http.routers.gitlab-https.tls=true
+      - traefik.http.routers.gitlab-https.tls.certresolver=cloudflare
+      - traefik.http.services.gitlab-service.loadbalancer.server.port=80
     depends_on:
       postgresql:
         condition: service_healthy
       redis:
         condition: service_healthy
     environment:
-      GITLAB_ROOT_EMAIL: ${GITLAB_ROOT_EMAIL:-"quanghung1599@gmail.com"}
-      GITLAB_ROOT_PASSWORD: ${GITLAB_ROOT_PASSWORD:-"Xitrumcute15030410@@"}
+      GITLAB_ROOT_EMAIL: ${GITLAB_ROOT_EMAIL}
+      GITLAB_ROOT_PASSWORD: ${GITLAB_ROOT_PASSWORD}
       GITLAB_OMNIBUS_CONFIG: |
-        external_url '${GITLAB_EXTERNAL_URL:-http://gitlab.hungngquang.xyz}'
-        nginx['listen_port'] = 2424
+        external_url 'https://gitlab.hungngquang.xyz'
+        nginx['listen_port'] = 80
+        nginx['listen_https'] = false
+        nginx['proxy_set_headers'] = {
+          "X-Forwarded-Proto" => "https",
+          "X-Forwarded-Ssl" => "on"
+        }
         gitlab_rails['gitlab_shell_ssh_port'] = 2222
         gitlab_rails['time_zone'] = 'UTC'
+        
+        # Enable HTTPS redirect
+        nginx['redirect_http_to_https'] = true
         
         # Database configuration
         gitlab_rails['db_adapter'] = 'postgresql'
@@ -86,7 +101,7 @@ services:
         
         # Optimize GitLab startup
         gitlab_rails['auto_migrate'] = true
-        gitlab_rails['initial_root_password'] = '${GITLAB_ROOT_PASSWORD:-Xitrumcute15030410@@}'
+        gitlab_rails['initial_root_password'] = '${GITLAB_ROOT_PASSWORD}'
         
         # Memory optimizations
         postgresql['shared_buffers'] = "128MB"
@@ -100,9 +115,11 @@ services:
       - /data/gitlab/logs:/var/log/gitlab
       - /data/gitlab/data:/var/opt/gitlab
       - /data/gitlab/artifacts:/var/opt/gitlab/gitlab-rails/shared/artifacts
+      - /data/gitlab/ssl:/etc/gitlab/ssl
     ports:
-      - '2424:2424'
-      - '2222:22'
+      - "80:80"
+      - "443:443"
+      - "2222:22"
     shm_size: '512m'
     healthcheck:
       test: ["CMD", "/opt/gitlab/bin/gitlab-healthcheck"]
@@ -112,7 +129,6 @@ services:
       start_period: 300s
     networks:
       - gitlab-network
-
   # Cloudflare Tunnel: Securely expose GitLab to the internet
   cloudflared:
     image: cloudflare/cloudflared:latest
